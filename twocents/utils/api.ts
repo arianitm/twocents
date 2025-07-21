@@ -9,7 +9,7 @@ export async function jsonRpc<T = any>(
     params,
   };
 
-  console.log("Sending JSON-RPC payload:", payload); // 👈 add this
+  console.log("Sending JSON-RPC payload:", payload);
 
   const response = await fetch("https://api.twocents.money/prod", {
     method: "POST",

@@ -29,7 +29,7 @@ export default function Home() {
         setLoading(false);
       }
     }
-
+    // Since it was required to show 100 posts. Another solution is with infinit scroll
     fetchPosts();
   }, [filter]);
 
@@ -40,14 +40,20 @@ export default function Home() {
         onFilterClick={setFilter}
         showFilter={true}
       />
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
         {loading ? (
           <div className="col-span-full flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
           </div>
         ) : (
           posts.map((post, index) => (
-            <PostCard key={post.uuid} post={post} index={index} />
+            <div
+              key={post.uuid}
+              className="animate-fadeSlideUp"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <PostCard key={post.uuid} post={post} />{" "}
+            </div>
           ))
         )}
       </div>

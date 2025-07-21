@@ -24,6 +24,21 @@ export interface Comment {
   author_age: string;
   author_gender: string;
   author_location: string;
+  author_meta: {
+    age: number;
+    gender: string;
+    arena: string;
+  };
   net_worth_label: "bronze" | "silver" | "gold" | "platinum";
   children: Comment[];
+}
+
+export interface PollOption {
+  option: string;
+  votes: number;
+}
+
+export interface Poll {
+  question: string;
+  options: PollOption[];
 }
