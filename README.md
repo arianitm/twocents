@@ -1,2 +1,0 @@
-# twocents
-Creating twocents task
