@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Twocents Next.js Web App
+
+This is a React/Next.js implementation of the Twocents anonymous social network home feed and post details, built as a technical challenge for a frontend developer position.
 
 ## Getting Started
 
@@ -14,23 +16,23 @@ pnpm dev
 bun dev
 ```
 
+## Features
+
+- Display the top 100 posts with filtering options (Top Today, New Today)
+- Responsive card grid layout with consistent styling
+- Post detail page showing full post content, nested comments, and animated poll results
+- User profile page with user details and user-specific posts
+- Navigation between posts, users, and filtered feeds
+- Loading and error states handled gracefully
+- Smooth animations on card load and poll bars (without external animation libraries)
+- Fully responsive design using Tailwind CSS
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployed in Netlify
