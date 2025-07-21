@@ -4,10 +4,6 @@ import { Post } from "@/types";
 import PostCard from "@/components/PostCard";
 import Header from "@/components/Header";
 
-interface HomeProps {
-  filter: string;
-}
-
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
