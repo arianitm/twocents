@@ -52,7 +52,7 @@ export default function UserPosts() {
     return (
       <>
         <Header />
-        <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto flex justify-center items-center">
+        <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl fixed inset-0  mx-auto flex justify-center items-center">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
         </main>
       </>
@@ -83,7 +83,20 @@ export default function UserPosts() {
   return (
     <>
       <Header />
-      <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
+      <main className="pt-20 md:pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
+        <h1
+          className="
+        text-4xl font-extrabold 
+        text-yellow-400 
+        mb-6 
+        select-none 
+        tracking-wide
+        drop-shadow-lg
+      "
+          style={{ fontFamily: "'Poppins', sans-serif" }} // optional for nicer font if you want to import in _app.tsx
+        >
+          User Details
+        </h1>
         <div className="flex flex-col md:flex-row gap-8 max-w-full">
           <section
             className="w-full h-full md:w-1/3 p-6 bg-gray-800 rounded-lg shadow text-white flex-shrink-0"
@@ -116,7 +129,7 @@ export default function UserPosts() {
 
           {/* Posts list */}
           <section className="flex-1 w-full">
-            <h1 className="text-2xl font-bold mb-6">Posts by user {uuid}</h1>
+            <h1 className="text-2xl font-bold mb-6">Posts by user: {uuid}</h1>
             {posts.length === 0 ? (
               <div className="text-gray-400 text-center py-10">
                 No posts found.

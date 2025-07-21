@@ -142,10 +142,14 @@ export default function PostDetail() {
 
   if (loading)
     return (
-      <div className="col-span-full flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
-      </div>
+      <>
+        <Header />
+        <div className="fixed inset-0 col-span-full flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
+        </div>
+      </>
     );
+
   if (error)
     return <div className="text-red-500 text-center py-10">{error}</div>;
   if (!post) return <div className="text-white p-6">Post not found</div>;
@@ -153,7 +157,20 @@ export default function PostDetail() {
   return (
     <>
       <Header />
-      <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
+      <main className="pt-20 md:pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
+        <h1
+          className="
+        text-4xl font-extrabold 
+        text-yellow-400 
+        mb-6 
+        select-none 
+        tracking-wide
+        drop-shadow-lg
+      "
+          style={{ fontFamily: "'Poppins', sans-serif" }} // optional for nicer font if you want to import in _app.tsx
+        >
+          Post Details
+        </h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <article className="bg-gray-800 rounded-lg shadow-md p-6 md:col-span-2">
             <h1 className="text-3xl font-extrabold mb-3 leading-tight">

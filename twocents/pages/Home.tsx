@@ -34,15 +34,29 @@ export default function Home() {
   }, [filter]);
 
   return (
-    <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
+    <main className="pt-20 md:pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
+      <h1
+        className="
+        pt-5
+        text-4xl font-extrabold 
+        text-yellow-400 
+        mb-6 
+        select-none 
+        tracking-wide
+        drop-shadow-lg
+      "
+        style={{ fontFamily: "'Poppins', sans-serif" }} // optional for nicer font if you want to import in _app.tsx
+      >
+        {filter === "newToday" ? "New Today" : "Top Today"} Posts
+      </h1>
       <Header
         activeFilter={filter}
         onFilterClick={setFilter}
         showFilter={true}
       />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
+      <div className=" mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 ">
         {loading ? (
-          <div className="col-span-full flex justify-center items-center py-20">
+          <div className="col-span-full fixed inset-0 flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
           </div>
         ) : (
