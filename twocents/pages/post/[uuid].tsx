@@ -168,8 +168,8 @@ export default function PostDetail() {
             </div>
           </article>
 
-          {/* Poll results take 1/3 of the width */}
-          {poll && <PollResults poll={poll} />}
+          {/* Poll results */}
+          <div className="h-full ">{poll && <PollResults poll={poll} />}</div>
         </div>
 
         <section className="mt-12 max-w-full">

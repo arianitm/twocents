@@ -84,9 +84,9 @@ export default function UserPosts() {
     <>
       <Header />
       <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
-        <div className="flex gap-8 max-w-full">
+        <div className="flex flex-col md:flex-row gap-8 max-w-full">
           <section
-            className="w-1/3 p-6 bg-gray-800 h-25 rounded-lg shadow text-white flex-shrink-0"
+            className="w-full h-full md:w-1/3 p-6 bg-gray-800 rounded-lg shadow text-white flex-shrink-0"
             style={{ minHeight: "280px" }}
           >
             <h2 className="text-2xl font-bold mb-4">User Profile</h2>
@@ -115,14 +115,14 @@ export default function UserPosts() {
           </section>
 
           {/* Posts list */}
-          <section className="flex-1">
+          <section className="flex-1 w-full">
             <h1 className="text-2xl font-bold mb-6">Posts by user {uuid}</h1>
             {posts.length === 0 ? (
               <div className="text-gray-400 text-center py-10">
                 No posts found.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
                 {posts.map((post) => (
                   <div key={post.uuid} className="h-[280px]">
                     <PostCard post={post} />
