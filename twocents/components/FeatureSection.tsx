@@ -24,7 +24,7 @@ const features = [
 
 export default function FeatureSection() {
   return (
-    <section className="relative z-10 bg-[#2e1e04] py-12 text-center text-neutral-200 overflow-hidden">
+    <section className="relative z-10  py-12 text-center text-neutral-200 overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#3b2c12] via-[#7a5316] to-[#3b2c12] shadow-[0_0_5px_#f8b133] z-10" />
       <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#3b2c12] via-[#7a5316] to-[#3b2c12] shadow-[0_0_5px_#f8b133] z-10" />
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
