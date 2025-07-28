@@ -4,6 +4,7 @@ import { jsonRpc } from "@/utils/api";
 import { Post } from "@/types";
 import Header from "@/components/Header";
 import PostCard from "@/components/PostCard";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 interface User {
   uuid: string;
@@ -38,6 +39,7 @@ export default function UserPosts() {
         setUser(data.user);
         setPosts(data.recentPosts || []);
         setError(null);
+        /* eslint-disable @typescript-eslint/no-explicit-any */
       } catch (err: any) {
         setError(err.message || "Unknown error");
       } finally {
@@ -52,7 +54,7 @@ export default function UserPosts() {
     return (
       <>
         <Header />
-        <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl fixed inset-0  mx-auto flex justify-center items-center">
+        <main className="pt-16 min-h-screen text-white p-6 max-w-7xl fixed inset-0  mx-auto flex justify-center items-center">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
         </main>
       </>
@@ -62,7 +64,7 @@ export default function UserPosts() {
     return (
       <>
         <Header />
-        <main className="pt-16 min-h-screen bg-gray-900 text-red-500 p-6 max-w-7xl mx-auto text-center">
+        <main className="pt-16 min-h-screen text-red-500 p-6 max-w-7xl mx-auto text-center">
           {error}
         </main>
       </>
@@ -72,7 +74,7 @@ export default function UserPosts() {
     return (
       <>
         <Header />
-        <main className="pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto text-center">
+        <main className="pt-16 min-h-screen text-white p-6 max-w-7xl mx-auto text-center">
           User not found.
         </main>
       </>
@@ -83,7 +85,17 @@ export default function UserPosts() {
   return (
     <>
       <Header />
-      <main className="pt-20 md:pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
+
+      <main className="pt-20 md:pt-16 min-h-screen text-white p-6 max-w-7xl mx-auto">
+        <div className="flex items-left mx-auto cursor-pointer">
+          <button
+            onClick={() => router.back()}
+            className="text-sm text-orange-400 hover:underline flex items-center gap-2 mb-2"
+          >
+            <IoMdArrowRoundBack />
+            Back
+          </button>
+        </div>
         <h1
           className="
         text-4xl font-extrabold 
@@ -93,40 +105,11 @@ export default function UserPosts() {
         tracking-wide
         drop-shadow-lg
       "
-          style={{ fontFamily: "'Poppins', sans-serif" }} // optional for nicer font if you want to import in _app.tsx
+          style={{ fontFamily: "'Poppins', sans-serif" }}
         >
           User Details
         </h1>
         <div className="flex flex-col md:flex-row gap-8 max-w-full">
-          <section
-            className="w-full h-full md:w-1/3 p-6 bg-gray-800 rounded-lg shadow text-white flex-shrink-0"
-            style={{ minHeight: "280px" }}
-          >
-            <h2 className="text-2xl font-bold mb-4">User Profile</h2>
-            <p className="text-yellow-400 font-semibold mb-3 whitespace-pre-wrap">
-              {bio}
-            </p>
-            <p className="mb-1">
-              Age: <span className="font-semibold">{age}</span> · Gender:{" "}
-              <span className="font-semibold">{gender}</span> · Location:{" "}
-              <span className="font-semibold">{arena}</span>
-            </p>
-            <p className="mb-1">
-              Balance:{" "}
-              <span className="font-semibold">
-                $
-                {balance.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
-              </span>
-            </p>
-            <p>
-              Subscription Level:{" "}
-              <span className="font-semibold">{subscription_type}</span>
-            </p>
-          </section>
-
           {/* Posts list */}
           <section className="flex-1 w-full">
             <h1 className="text-2xl font-bold mb-6">Posts by user: {uuid}</h1>

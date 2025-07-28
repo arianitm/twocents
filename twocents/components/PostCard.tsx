@@ -1,50 +1,71 @@
-import Link from "next/link";
 import { Post } from "@/types";
+import Link from "next/link";
+import { FaHeart, FaCommentAlt } from "react-icons/fa";
+import { FiShare2 } from "react-icons/fi";
+import Image from "next/image";
+import { format } from "date-fns";
 
-const pillColors: Record<string, string> = {
-  bronze: "bg-gradient-to-r from-yellow-800 to-yellow-600",
-  silver: "bg-gradient-to-r from-gray-400 to-gray-100",
-  gold: "bg-gradient-to-r from-yellow-400 to-yellow-200",
-  platinum: "bg-gradient-to-r from-blue-300 to-white",
+type Props = {
+  post: Post;
 };
 
-function getNetWorthLabel(balance: number): string {
-  if (balance >= 100000) return "platinum";
-  if (balance >= 50000) return "gold";
-  if (balance >= 10000) return "silver";
-  return "bronze";
-}
-
-export default function PostCard({ post }: { post: Post }) {
-  const label = getNetWorthLabel(post.author_meta.balance);
-  const colorClass = pillColors[label] || "bg-gray-500";
+export default function PostCard({ post }: Props) {
+  const formattedDate = format(new Date(post.created_at), "p · MMM d, yyyy");
 
   return (
-    <Link href={`/post/${post.uuid}`} className="block">
-      <div className="bg-gray-800 rounded-lg shadow-md p-6 flex flex-col justify-between min-h-[280px] max-h-[280px] cursor-pointer hover:bg-gray-700 transition">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <Link
-              href={`/user/${post.author_uuid}`}
-              className={`text-xs px-4 py-2 rounded-full font-semibold ${colorClass} hover:brightness-70 transition hover:text-gray-700 hover:font-semibold`}
-              onClick={(e) => e.stopPropagation()}
-              title="View posts by this user"
-            >
-              {label}
-            </Link>
-            <span className="text-sm text-gray-400">
-              {post.author_meta.age} · {post.author_meta.gender} ·{" "}
+    <Link href={`/post/${post.uuid}`}>
+      <div className="bg-[#15202b] hover:-translate-y-1 transition-transform duration-200 ease-out border border-neutral-700/50 rounded-2xl p-4 text-neutral-300 cursor-pointer max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-3">
+          <Image
+            src="/avatar.png"
+            alt="Avatar"
+            width={36}
+            height={36}
+            className="rounded-full"
+          />
+          <div>
+            <div className="text-sm text-white font-semibold">
+              {post.author_meta.age} · {post.author_meta.gender}
+            </div>
+            <div className="text-xs text-neutral-400">
               {post.author_meta.arena}
-            </span>
+            </div>
           </div>
-          <h2 className="font-bold text-lg truncate">
-            {post.title || post.text}
-          </h2>
-          <p className="text-gray-300 mt-2 line-clamp-4">{post.text}</p>
         </div>
-        <div className="mt-4 flex justify-between text-gray-400 text-sm">
-          <div>💬 {post.comment_count} comments</div>
-          <div>❤️ {post.upvote_count} upvotes</div>
+
+        <h2 className="text-lg font-bold text-white leading-tight mb-1 line-clamp-1">
+          {post.title}
+        </h2>
+
+        <p className="text-base text-neutral-400 leading-snug line-clamp-2 mb-4">
+          {post.text}
+        </p>
+
+        <div className="text-xs text-neutral-500 border-b border-neutral-700/50 pb-3 mb-3">
+          {formattedDate}
+        </div>
+
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2 text-neutral-400 hover:text-pink-500 transition">
+            <FaHeart className="w-4 h-4" />
+            <span className="font-medium">{post.upvote_count}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-neutral-400 hover:text-sky-500 transition">
+            <FaCommentAlt className="w-4 h-4" />
+            <span className="font-medium">Reply</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-neutral-400 hover:text-neutral-100 transition">
+            <FiShare2 className="w-4 h-4" />
+            <span className="font-medium">Copy link</span>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <span className="block text-center border border-neutral-700 text-sky-500 hover:text-sky-300 rounded-full py-1 font-semibold transition">
+            Read more on X
+          </span>
         </div>
       </div>
     </Link>

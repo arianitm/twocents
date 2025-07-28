@@ -1,206 +1,326 @@
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import router, { useRouter } from "next/router";
+import Link from "next/link";
 import { jsonRpc } from "@/utils/api";
-import { Post, Comment } from "@/types";
+import { Post, Comment, Poll } from "@/types";
 import Header from "@/components/Header";
-import PollResults from "@/components/PollResults";
+import clsx from "clsx";
+import {
+  FaClock,
+  FaComment,
+  FaEye,
+  FaLocationArrow,
+  FaLongArrowAltDown,
+  FaLongArrowAltUp,
+  FaReply,
+} from "react-icons/fa";
+import { IoPerson, IoShareOutline } from "react-icons/io5";
+import { MdCake } from "react-icons/md";
+import { BsThreeDots } from "react-icons/bs";
+import { RiExpandUpDownLine } from "react-icons/ri";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
-function CommentItem({
-  comment,
-  level = 0,
-}: {
-  comment: Comment;
-  level?: number;
-}) {
-  return (
-    <div className={`pl-${level * 6} border-l border-gray-600 ml-4 mb-4`}>
-      <div className="text-sm text-gray-400 mb-1">
-        {comment.author_age} · {comment.author_gender} ·{" "}
-        {comment.author_location}
-      </div>
-      <div className="bg-gray-700 p-3 rounded whitespace-pre-wrap">
-        {comment.text}
-      </div>
-      {comment.children &&
-        comment.children.length > 0 &&
-        comment.children.map((child) => (
-          <CommentItem key={child.uuid} comment={child} level={level + 1} />
-        ))}
-    </div>
-  );
-}
-
-// Type for poll result item from API
-type PollResultItem = {
-  votes: number;
-  average_balance: number;
+const pillColors = {
+  bronze: "from-yellow-800 to-yellow-600",
+  silver: "from-gray-400 to-gray-100",
+  gold: "from-yellow-400 to-yellow-200",
+  platinum: "from-blue-300 to-white",
 };
 
-export default function PostDetail() {
-  const router = useRouter();
-  const { uuid } = router.query;
+function getNetWorthLabel(balance: number): keyof typeof pillColors {
+  if (balance >= 100000) return "platinum";
+  if (balance >= 50000) return "gold";
+  if (balance >= 10000) return "silver";
+  return "bronze";
+}
 
+export default function PostDetailPage() {
+  const { query } = useRouter();
+  const uuid = query.uuid as string;
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [poll, setPoll] = useState<{
-    question: string;
-    options: { option: string; votes: number }[];
-  } | null>(null);
+  const [poll, setPoll] = useState<Poll | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!uuid) return;
+    setLoading(true);
 
-    async function fetchPost() {
-      setLoading(true);
+    const fetchAll = async () => {
       try {
-        // Fetch post and comments
-        const data = await jsonRpc<{ post: Post; comments: Comment[] }>(
-          "/v1/posts/get",
-          { post_uuid: uuid }
-        );
-        setPost(data.post);
-
-        // Fetch comments separately
-        const commentsData = await jsonRpc<{ comments: Comment[] }>(
+        const postRes = await jsonRpc<{ post: Post }>("/v1/posts/get", {
+          post_uuid: uuid,
+        });
+        const commentRes = await jsonRpc<{ comments: Comment[] }>(
           "/v1/comments/get",
           { post_uuid: uuid }
         );
-        setComments(commentsData.comments || []);
+        const pollRes = await jsonRpc<{
+          results: Record<string, { votes: number }>;
+        }>("/v1/polls/get", { post_uuid: uuid });
 
-        // Fetch poll data
-        const pollData = await jsonRpc<{
-          results: Record<string, PollResultItem>;
-        }>("/v1/polls/get", {
-          post_uuid: uuid,
-        });
+        setPost(postRes.post);
+        setComments(commentRes.comments);
 
-        const rawResults = pollData.results;
-        if (rawResults) {
-          const options = Object.entries(rawResults).map(([key, val]) => ({
+        if (pollRes.results) {
+          const options = Object.entries(pollRes.results).map(([key, val]) => ({
             option: `Option ${key}`,
             votes: val.votes,
           }));
 
-          setPoll({
-            question: "Poll results",
-            options,
-          });
-        } else {
-          setPoll(null);
+          setPoll({ question: "Poll Results", options });
         }
-
-        setError(null);
-      } catch (err: any) {
-        setError(err.message || "Unknown error");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    fetchPost();
+    fetchAll();
   }, [uuid]);
 
-  //Load comment Item
-  function CommentItem({
-    comment,
-    level = 0,
-  }: {
-    comment: Comment & {
-      author_meta: { age: number; gender: string; arena: string };
-    };
-    level?: number;
-  }) {
+  const renderComment = (comment: Comment, level = 0) => {
+    const color = pillColors[comment.net_worth_label];
+
     return (
-      <div
-        className={`pl-${
-          level * 6
-        } p-3 rounded border-l border-white-600 ml-4 mb-4`}
-      >
-        <div className="flex items-center gap-2 text-sm text-gray-400 mb-1  ">
-          <span>{comment.author_meta.age}</span>
-          <span>·</span>
-          <span>{comment.author_meta.gender}</span>
-          <span>·</span>
-          <span>{comment.author_meta.arena}</span>
-          <span>{comment.author_meta.arena}</span>
+      <div key={comment.uuid} className={clsx(`ml-${level * 4} mb-6`)}>
+        <div className="flex justify-between items-center gap-2 text-xs text-gray-400 mb-1">
+          <div className="flex items-center gap-2">
+            {(() => {
+              const netWorthLabel = getNetWorthLabel(
+                comment.author_meta.balance
+              );
+              const netWorthColor = pillColors[netWorthLabel];
+
+              return (
+                <Link
+                  href={`/user/${comment.author_uuid}`}
+                  className={clsx(
+                    "text-xs px-3 py-1 rounded-full font-semibold bg-gradient-to-r text-black",
+                    netWorthColor,
+                    "hover:brightness-90"
+                  )}
+                >
+                  {netWorthLabel}
+                </Link>
+              );
+            })()}
+            <FaLongArrowAltUp size={10} />
+            <span className="text-white text-sm">{comment.upvote_count}</span>
+            <MdCake size={12} />
+            <span>{comment.author_meta.age}</span>
+            <IoPerson size={12} />
+            <span>{comment.author_meta.gender}</span>
+            <FaLocationArrow size={12} />
+            <FaClock color="gray" />
+          </div>
+          <div className="flex items-right">
+            {new Date(comment.created_at).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+            <span>
+              <BsThreeDots color="gray" />
+            </span>
+          </div>
         </div>
-        <div className="bg-gray-700 p-3 rounded whitespace-pre-wrap">
+
+        <div className="p-4 text-white text-sm leading-snug">
           {comment.text}
         </div>
 
-        {/* Render nested children recursively if you have them */}
-        {comment.children &&
-          comment.children.length > 0 &&
-          comment.children.map((child) => (
-            <CommentItem key={child.uuid} comment={child} level={level + 1} />
-          ))}
+        {/* Render children comments */}
+        {comment.children?.map((child) => renderComment(child, level + 1))}
       </div>
     );
-  }
+  };
 
   if (loading)
     return (
-      <>
+      <div className="bg-black">
         <Header />
-        <div className="fixed inset-0 col-span-full flex justify-center items-center py-20">
+        <main className="w-full pt-16 bg-black min-h-screen text-white p-6 fixed inset-0  mx-auto flex justify-center items-center">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
-        </div>
-      </>
+        </main>
+      </div>
     );
 
-  if (error)
-    return <div className="text-red-500 text-center py-10">{error}</div>;
-  if (!post) return <div className="text-white p-6">Post not found</div>;
+  if (!post)
+    return (
+      <div className="w-full bg-black">
+        <Header />
+        <main className="w-full pt-16 min-h-screen text-white p-6 mx-auto text-center">
+          User not found.
+        </main>
+      </div>
+    );
+
+  const netWorthLabel = getNetWorthLabel(post.author_meta.balance);
+  const netWorthColor = pillColors[netWorthLabel];
 
   return (
-    <>
+    <div className="w-full bg-black">
       <Header />
-      <main className="pt-20 md:pt-16 min-h-screen bg-gray-900 text-white p-6 max-w-7xl mx-auto">
-        <h1
-          className="
-        text-4xl font-extrabold 
-        text-yellow-400 
-        mb-6 
-        select-none 
-        tracking-wide
-        drop-shadow-lg
-      "
-          style={{ fontFamily: "'Poppins', sans-serif" }} // optional for nicer font if you want to import in _app.tsx
-        >
-          Post Details
-        </h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <article className="bg-gray-800 rounded-lg shadow-md p-6 md:col-span-2">
-            <h1 className="text-3xl font-extrabold mb-3 leading-tight">
-              {post.title}
-            </h1>
-            <p className="text-gray-300 mb-6 whitespace-pre-wrap">
-              {post.text}
-            </p>
-            <div className="text-sm text-gray-400 font-medium">
-              {post.author_meta.age} · {post.author_meta.gender} ·{" "}
-              {post.author_meta.arena}
-            </div>
-          </article>
 
-          {/* Poll results */}
-          <div className="h-full ">{poll && <PollResults poll={poll} />}</div>
+      <main className="pt-20 px-4 md:px-6 max-w-2xl mx-auto text-white">
+        <div className="mx-auto cursor-pointer">
+          <button
+            onClick={() => router.back()}
+            className="text-sm text-orange-400 hover:underline flex items-center gap-2 mb-2"
+          >
+            <IoMdArrowRoundBack /> Back
+          </button>
+        </div>
+        <div className="mb-6 border-b border-gray-800 pb-4 border-b border-gray-800">
+          {/* Post title */}
+          <div className="flex justify-between align-center">
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-snug">
+              {post.title || post.text.slice(0, 50)}
+            </h1>
+            <div>
+              <Link
+                href={`/user/${post.author_uuid}`}
+                className={clsx(
+                  "text-xs px-3 py-1 rounded-full font-semibold bg-gradient-to-r text-black",
+                  netWorthColor,
+                  "hover:brightness-90"
+                )}
+              >
+                {" "}
+                {netWorthLabel}{" "}
+              </Link>
+            </div>
+          </div>
+
+          {/* Post body */}
+          <p className="text-gray-300 text-sm mb-6 whitespace-pre-wrap">
+            {post.text}
+          </p>
+
+          <div className="flex items-left justify-between mb-3">
+            <span className="flex items-center gap-2">
+              <MdCake color="gray" />
+              {post.author_meta.age}
+            </span>
+            <span className="flex items-center gap-2">
+              {" "}
+              <IoPerson color="gray" />
+              {post.author_meta.gender}
+            </span>
+            <span className="flex items-center gap-2">
+              <FaLocationArrow color="gray" />
+              {post.author_meta.arena}
+            </span>
+            <span className="flex items-center gap-2">
+              <FaClock color="gray" />
+              {new Date(post.created_at).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+
+          {/* Voting row */}
+          <div className="flex items-left justify-between border-b border-gray-800">
+            <div className="flex items-left justify-between gap-10">
+              <span className="flex items-center">
+                <FaLongArrowAltUp color="gray" /> {post.upvote_count}
+              </span>
+              <span className="flex items-center gap-2">
+                <FaComment color="gray" />
+                {post.comment_count}
+              </span>
+              <span className="flex items-center gap-2">
+                <FaEye color="gray" /> {post.view_count}
+              </span>
+            </div>
+            <span className="text-orange-400 hover:underline cursor-pointer ml-1">
+              {post.topic}
+            </span>
+            <span>
+              {" "}
+              <BsThreeDots color="gray" />
+            </span>
+          </div>
+          <div className="pt-5 pb-5 border-b border-gray-800">
+            <div className="flex items-left justify-between">
+              <button className="bg-orange-400 hover:bg-orange-500 w-10 h-10 rounded-md flex items-center justify-center text-black font-bold text-lg">
+                <FaLongArrowAltUp color="white" />
+              </button>
+              <button className=" hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
+                <FaLongArrowAltDown color="orange" />
+              </button>
+              <button className=" hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
+                <FaReply color="orange" />
+              </button>
+              <button className=" hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
+                <IoShareOutline color="orange" />
+              </button>
+            </div>
+          </div>
+          <div className="pt-5">
+            <div className="flex items-leftt justify-between">
+              Sort By
+              <span className="flex items-center gap-2">
+                Latest
+                <RiExpandUpDownLine color="orange" />
+              </span>
+            </div>
+          </div>
         </div>
 
-        <section className="mt-12 max-w-full">
-          <h2 className="text-xl font-semibold mb-6 border-b border-gray-700 pb-2">
-            Comments ({comments?.length})
-          </h2>
-          {comments?.length === 0 && (
-            <p className="text-gray-500 italic">No comments yet.</p>
+        {poll && (
+          <section className="mb-10 border border-gray-800 rounded-xl p-4">
+            <h2 className="text-lg font-semibold mb-4 text-white">
+              {poll.question}
+            </h2>
+            {poll.options.map((opt, idx) => {
+              const totalVotes = poll.options.reduce(
+                (acc, o) => acc + o.votes,
+                0
+              );
+              const percent =
+                totalVotes > 0 ? (opt.votes / totalVotes) * 100 : 0;
+
+              // MOCKED balance for visual
+              const totalBalance = Math.floor(Math.random() * 2_000_000);
+
+              return (
+                <div key={idx} className="mb-4 relative">
+                  <div className="flex justify-between items-center mb-1 text-sm font-medium">
+                    <span className="text-white">{opt.option}</span>
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1 text-white border border-gray-500 px-3 py-1 rounded-full text-sm font-semibold">
+                        <span className="text-gray-300">$</span>
+                        {totalBalance.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="relative w-full h-10 rounded-xl bg-gray-800 overflow-hidden">
+                    <div
+                      className="absolute top-0 left-0 h-full bg-orange-400 rounded-xl transition-all duration-1000 ease-out"
+                      style={{ width: `${percent}%` }}
+                    ></div>
+
+                    <div className="relative z-10 h-full px-4 flex items-center justify-between text-sm font-semibold text-white">
+                      <span>{opt.option}</span>
+                      <span>{Math.round(percent)}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </section>
+        )}
+
+        <section className="mb-5 pb-5">
+          {comments.length === 0 ? (
+            <p className="text-gray-400 italic">No comments yet.</p>
+          ) : (
+            comments.map((comment) => renderComment(comment))
           )}
-          {comments.map((comment) => (
-            <CommentItem key={comment.uuid} comment={comment} />
-          ))}
         </section>
       </main>
-    </>
+    </div>
   );
 }

@@ -8,6 +8,7 @@ export interface Post {
   comment_count: number;
   view_count: number;
   report_count: number;
+  created_at: string;
   author_meta: {
     bio: string;
     age: number;
@@ -24,10 +25,14 @@ export interface Comment {
   author_age: string;
   author_gender: string;
   author_location: string;
+  author_uuid: string;
+  upvote_count: number;
+  created_at: string;
   author_meta: {
     age: number;
     gender: string;
     arena: string;
+    balance: number;
   };
   net_worth_label: "bronze" | "silver" | "gold" | "platinum";
   children: Comment[];
