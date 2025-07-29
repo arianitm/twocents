@@ -41,6 +41,7 @@ export default function PostDetailPage() {
   const { uuid } = router.query;
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [pollOptions, setPollOptions] = useState<
     {
       option: string;
@@ -80,6 +81,9 @@ export default function PostDetailPage() {
         }));
 
         setPollOptions(combined);
+        setError(null);
+      } catch (err: any) {
+        setError(err.message || "Unknown error");
       } finally {
         setLoading(false);
       }
