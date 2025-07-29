@@ -36,7 +36,9 @@ function getNetWorthLabel(balance: number): keyof typeof pillColors {
 
 export default function PostDetailPage() {
   const { query } = useRouter();
-  const uuid = query.uuid as string;
+  // const uuid = query.uuid as string;
+  const router = useRouter();
+  const { uuid } = router.query;
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [pollOptions, setPollOptions] = useState<
