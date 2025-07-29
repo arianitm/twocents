@@ -110,7 +110,8 @@ export default function PostDetailPage() {
                     "hover:brightness-90"
                   )}
                 >
-                  {netWorthLabel}
+                  {/* {netWorthLabel} */}$
+                  {Math.round(comment.author_meta.balance).toLocaleString()}
                 </Link>
               );
             })()}
@@ -192,7 +193,8 @@ export default function PostDetailPage() {
                   "hover:brightness-90"
                 )}
               >
-                {netWorthLabel}
+                {/* {netWorthLabel} */}$
+                {Math.round(post.author_meta.balance).toLocaleString()}
               </Link>
             </div>
           </div>
