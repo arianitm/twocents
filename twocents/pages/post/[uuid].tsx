@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import router, { useRouter } from "next/router";
 import Link from "next/link";
 import { jsonRpc } from "@/utils/api";
-import { Post, Comment, Poll } from "@/types";
+import { Post, Comment } from "@/types";
 import Header from "@/components/Header";
 import clsx from "clsx";
 import {
@@ -39,7 +39,13 @@ export default function PostDetailPage() {
   const uuid = query.uuid as string;
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [poll, setPoll] = useState<Poll | null>(null);
+  const [pollOptions, setPollOptions] = useState<
+    {
+      option: string;
+      votes: number;
+      average_balance: number;
+    }[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -56,20 +62,22 @@ export default function PostDetailPage() {
           { post_uuid: uuid }
         );
         const pollRes = await jsonRpc<{
-          results: Record<string, { votes: number }>;
+          results: Record<number, { votes: number; average_balance: number }>;
         }>("/v1/polls/get", { post_uuid: uuid });
 
         setPost(postRes.post);
         setComments(commentRes.comments);
 
-        if (pollRes.results) {
-          const options = Object.entries(pollRes.results).map(([key, val]) => ({
-            option: `Option ${key}`,
-            votes: val.votes,
-          }));
+        const labels = postRes.post?.post_meta?.poll ?? [];
+        const results = pollRes.results ?? {};
 
-          setPoll({ question: "Poll Results", options });
-        }
+        const combined = labels.map((label, idx) => ({
+          option: label,
+          votes: results[idx]?.votes ?? 0,
+          average_balance: results[idx]?.average_balance ?? 0,
+        }));
+
+        setPollOptions(combined);
       } finally {
         setLoading(false);
       }
@@ -77,6 +85,8 @@ export default function PostDetailPage() {
 
     fetchAll();
   }, [uuid]);
+
+  const totalVotes = pollOptions.reduce((acc, o) => acc + o.votes, 0);
 
   const renderComment = (comment: Comment, level = 0) => {
     const color = pillColors[comment.net_worth_label];
@@ -128,7 +138,6 @@ export default function PostDetailPage() {
           {comment.text}
         </div>
 
-        {/* Render children comments */}
         {comment.children?.map((child) => renderComment(child, level + 1))}
       </div>
     );
@@ -149,7 +158,7 @@ export default function PostDetailPage() {
       <div className="w-full bg-black">
         <Header />
         <main className="w-full pt-16 min-h-screen text-white p-6 mx-auto text-center">
-          User not found.
+          Post not found.
         </main>
       </div>
     );
@@ -160,18 +169,16 @@ export default function PostDetailPage() {
   return (
     <div className="w-full bg-black">
       <Header />
+      {/* <main className="h-full pt-20 px-4 md:px-6 max-w-2xl mx-auto text-white"> */}
+      <main className="pt-20 px-4 md:px-6 max-w-2xl mx-auto text-white min-h-[calc(100vh-60px)]">
+        <button
+          onClick={() => router.back()}
+          className="text-sm text-orange-400 hover:underline flex items-center gap-2 mb-2"
+        >
+          <IoMdArrowRoundBack /> Back
+        </button>
 
-      <main className="pt-20 px-4 md:px-6 max-w-2xl mx-auto text-white">
-        <div className="mx-auto cursor-pointer">
-          <button
-            onClick={() => router.back()}
-            className="text-sm text-orange-400 hover:underline flex items-center gap-2 mb-2"
-          >
-            <IoMdArrowRoundBack /> Back
-          </button>
-        </div>
         <div className="mb-6 border-b border-gray-800 pb-4 border-b border-gray-800">
-          {/* Post title */}
           <div className="flex justify-between align-center">
             <h1 className="text-xl sm:text-2xl font-bold text-white mb-2 leading-snug">
               {post.title || post.text.slice(0, 50)}
@@ -185,13 +192,11 @@ export default function PostDetailPage() {
                   "hover:brightness-90"
                 )}
               >
-                {" "}
-                {netWorthLabel}{" "}
+                {netWorthLabel}
               </Link>
             </div>
           </div>
 
-          {/* Post body */}
           <p className="text-gray-300 text-sm mb-6 whitespace-pre-wrap">
             {post.text}
           </p>
@@ -202,7 +207,6 @@ export default function PostDetailPage() {
               {post.author_meta.age}
             </span>
             <span className="flex items-center gap-2">
-              {" "}
               <IoPerson color="gray" />
               {post.author_meta.gender}
             </span>
@@ -219,7 +223,6 @@ export default function PostDetailPage() {
             </span>
           </div>
 
-          {/* Voting row */}
           <div className="flex items-left justify-between border-b border-gray-800">
             <div className="flex items-left justify-between gap-10">
               <span className="flex items-center">
@@ -237,28 +240,29 @@ export default function PostDetailPage() {
               {post.topic}
             </span>
             <span>
-              {" "}
               <BsThreeDots color="gray" />
             </span>
           </div>
+
           <div className="pt-5 pb-5 border-b border-gray-800">
             <div className="flex items-left justify-between">
               <button className="bg-orange-400 hover:bg-orange-500 w-10 h-10 rounded-md flex items-center justify-center text-black font-bold text-lg">
                 <FaLongArrowAltUp color="white" />
               </button>
-              <button className=" hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
+              <button className="hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
                 <FaLongArrowAltDown color="orange" />
               </button>
-              <button className=" hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
+              <button className="hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
                 <FaReply color="orange" />
               </button>
-              <button className=" hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
+              <button className="hover:bg-gray-600 w-10 h-10 rounded-md flex items-center justify-center text-white font-bold text-lg">
                 <IoShareOutline color="orange" />
               </button>
             </div>
           </div>
+
           <div className="pt-5">
-            <div className="flex items-leftt justify-between">
+            <div className="flex items-left justify-between">
               Sort By
               <span className="flex items-center gap-2">
                 Latest
@@ -268,22 +272,14 @@ export default function PostDetailPage() {
           </div>
         </div>
 
-        {poll && (
+        {pollOptions.length > 0 && (
           <section className="mb-10 border border-gray-800 rounded-xl p-4">
             <h2 className="text-lg font-semibold mb-4 text-white">
-              {poll.question}
+              {post.title}
             </h2>
-            {poll.options.map((opt, idx) => {
-              const totalVotes = poll.options.reduce(
-                (acc, o) => acc + o.votes,
-                0
-              );
+            {pollOptions.map((opt, idx) => {
               const percent =
                 totalVotes > 0 ? (opt.votes / totalVotes) * 100 : 0;
-
-              // MOCKED balance for visual
-              const totalBalance = Math.floor(Math.random() * 2_000_000);
-
               return (
                 <div key={idx} className="mb-4 relative">
                   <div className="flex justify-between items-center mb-1 text-sm font-medium">
@@ -291,7 +287,7 @@ export default function PostDetailPage() {
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-1 text-white border border-gray-500 px-3 py-1 rounded-full text-sm font-semibold">
                         <span className="text-gray-300">$</span>
-                        {totalBalance.toLocaleString()}
+                        {Math.round(opt.average_balance).toLocaleString()}
                       </div>
                     </div>
                   </div>
@@ -301,10 +297,9 @@ export default function PostDetailPage() {
                       className="absolute top-0 left-0 h-full bg-orange-400 rounded-xl transition-all duration-1000 ease-out"
                       style={{ width: `${percent}%` }}
                     ></div>
-
                     <div className="relative z-10 h-full px-4 flex items-center justify-between text-sm font-semibold text-white">
                       <span>{opt.option}</span>
-                      <span>{Math.round(percent)}</span>
+                      <span>{Math.round(percent)}%</span>
                     </div>
                   </div>
                 </div>

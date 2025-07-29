@@ -53,7 +53,7 @@ export default function PostCard({ post }: Props) {
 
           <div className="flex items-center gap-2 text-neutral-400 hover:text-sky-500 transition">
             <FaCommentAlt className="w-4 h-4" />
-            <span className="font-medium">Reply</span>
+            <span className="font-medium">{post.comment_count}</span>
           </div>
 
           <div className="flex items-center gap-2 text-neutral-400 hover:text-neutral-100 transition">

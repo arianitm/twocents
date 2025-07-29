@@ -9,6 +9,9 @@ export interface Post {
   view_count: number;
   report_count: number;
   created_at: string;
+  post_meta: {
+    poll: string[];
+  };
   author_meta: {
     bio: string;
     age: number;
@@ -38,12 +41,21 @@ export interface Comment {
   children: Comment[];
 }
 
-export interface PollOption {
-  option: string;
+// export interface PollOption {
+//   option: string;
+//   votes: number;
+// }
+
+// export interface Poll {
+//   question: string;
+//   options: PollOption[];
+// }
+
+export interface PollVoteResult {
   votes: number;
+  average_balance: number;
 }
 
 export interface Poll {
-  question: string;
-  options: PollOption[];
+  [index: number]: PollVoteResult;
 }

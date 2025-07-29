@@ -40,6 +40,7 @@ export default function PollResults({ poll }: PollResultsProps) {
                   className="bg-yellow-400 h-4 rounded transition-all duration-1000 ease-out"
                   style={{ width: animated ? `${percentage}%` : "0%" }}
                 />
+                {percentage}
               </div>
             </div>
           );
