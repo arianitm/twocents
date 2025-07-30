@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import { jsonRpc } from "@/utils/api";
-import { Post, Comment, Poll, PollVoteResult } from "@/types";
+import { Post, Comment } from "@/types";
 import Header from "@/components/Header";
 import PollComponent from "@/components/PollComponent";
 import clsx from "clsx";
@@ -177,7 +177,6 @@ export default function PostDetailPage() {
   return (
     <div className="w-full bg-black">
       <Header />
-      {/* <main className="h-full pt-20 px-4 md:px-6 max-w-2xl mx-auto text-white"> */}
       <main className="pt-20 px-4 md:px-6 max-w-2xl mx-auto text-white min-h-[calc(100vh-60px)]">
         <button
           onClick={() => router.back()}
@@ -200,7 +199,6 @@ export default function PostDetailPage() {
                   "hover:brightness-90"
                 )}
               >
-                {/* {netWorthLabel} */}$
                 {Math.round(post.author_meta.balance).toLocaleString()}
               </Link>
             </div>

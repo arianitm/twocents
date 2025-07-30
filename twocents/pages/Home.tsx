@@ -28,19 +28,19 @@ export default function HomeFeed() {
     fetchPosts();
   }, [filter]);
 
-  // ✅ Auto-scroll logic
+  //Auto-scroll logic
   useEffect(() => {
     let frameId: number;
     const container = scrollRef.current;
 
     function step() {
       if (container) {
-        container.scrollTop += 0.3; // speed of scroll
+        container.scrollTop += 0.3;
         if (
           container.scrollTop >=
           container.scrollHeight - container.clientHeight
         ) {
-          container.scrollTop = 0; // loop to top
+          container.scrollTop = 0;
         }
       }
       frameId = requestAnimationFrame(step);
@@ -51,35 +51,8 @@ export default function HomeFeed() {
   }, [loading]);
 
   return (
-    // <main className="text-white min-h-screen">
-    //   <section className="px-6  max-w-7xl mx-auto">
-    //     {/* Scrollable container with fixed height */}
-    //     <div
-    //       ref={scrollRef}
-    //       className="overflow-y-auto max-h-[70vh] pr-2 scrollbar-none"
-    //     >
-    //       {loading ? (
-    //         <div className="flex justify-center items-center min-h-[200px]">
-    //           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-yellow-400"></div>
-    //         </div>
-    //       ) : (
-    //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    //           {posts.map((post) => (
-    //             <PostCard key={post.uuid} post={post} />
-    //           ))}
-    //         </div>
-    //       )}
-    //     </div>
-
-    //     {error && <div className="text-red-500 text-center py-10">{error}</div>}
-    //   </section>
-    //   <div className="relative z-10 py-1 text-center text-neutral-200 overflow-hidden">
-    //     <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#3b2c12] via-[#7a5316] to-[#3b2c12] shadow-[0_0_5px_#f8b133] z-10" />
-    //   </div>
-    // </main>
     <main className="text-white min-h-screen">
       <section className="px-6 max-w-7xl mx-auto">
-        {/* FILTER TABS */}
         <div className="flex justify-center gap-2 sm:gap-4 my-6">
           {[
             { label: "Top Today", value: "topToday" },
@@ -101,7 +74,7 @@ export default function HomeFeed() {
           ))}
         </div>
 
-        {/* Scrollable container with fixed height */}
+        {/* Scrollable container */}
         <div
           ref={scrollRef}
           className="overflow-y-auto max-h-[70vh] pr-2 scrollbar-none"
