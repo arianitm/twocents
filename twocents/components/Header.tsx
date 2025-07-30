@@ -9,7 +9,7 @@ export default function Header({}) {
 
   return (
     <div className="flex justify-center px-4 py-8">
-      <header className="fixed w-full max-w-6xl bg-transparent backdrop-blur-md border border-[#795910] z-50 text-white px-4 sm:px-6 py-3 rounded-full shadow-md flex items-center justify-between">
+      <header className="m2 fixed w-full max-w-6xl bg-transparent backdrop-blur-md border border-[#795910] z-50 text-white px-4 sm:px-6 py-3 rounded-full shadow-md flex items-center justify-between">
         {/* Logo */}
         <div
           className="flex items-center space-x-2 cursor-pointer"

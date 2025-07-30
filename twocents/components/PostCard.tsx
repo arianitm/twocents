@@ -4,6 +4,7 @@ import { FaHeart, FaCommentAlt } from "react-icons/fa";
 import { FiShare2 } from "react-icons/fi";
 import Image from "next/image";
 import { format } from "date-fns";
+import clsx from "clsx";
 
 type Props = {
   post: Post;

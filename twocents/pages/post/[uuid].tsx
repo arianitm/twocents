@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import router, { useRouter } from "next/router";
 import Link from "next/link";
 import { jsonRpc } from "@/utils/api";
-import { Post, Comment } from "@/types";
+import { Post, Comment, Poll, PollVoteResult } from "@/types";
 import Header from "@/components/Header";
+import PollComponent from "@/components/PollComponent";
 import clsx from "clsx";
 import {
   FaClock,
@@ -280,41 +281,7 @@ export default function PostDetailPage() {
           </div>
         </div>
 
-        {pollOptions.length > 0 && (
-          <section className="mb-10 border border-gray-800 rounded-xl p-4">
-            <h2 className="text-lg font-semibold mb-4 text-white">
-              {post.title}
-            </h2>
-            {pollOptions.map((opt, idx) => {
-              const percent =
-                totalVotes > 0 ? (opt.votes / totalVotes) * 100 : 0;
-              return (
-                <div key={idx} className="mb-4 relative">
-                  <div className="flex justify-between items-center mb-1 text-sm font-medium">
-                    <span className="text-white">{opt.option}</span>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1 text-white border border-gray-500 px-3 py-1 rounded-full text-sm font-semibold">
-                        <span className="text-gray-300">$</span>
-                        {Math.round(opt.average_balance).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="relative w-full h-10 rounded-xl bg-gray-800 overflow-hidden">
-                    <div
-                      className="absolute top-0 left-0 h-full bg-orange-400 rounded-xl transition-all duration-1000 ease-out"
-                      style={{ width: `${percent}%` }}
-                    ></div>
-                    <div className="relative z-10 h-full px-4 flex items-center justify-between text-sm font-semibold text-white">
-                      <span>{opt.option}</span>
-                      <span>{Math.round(percent)}%</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </section>
-        )}
+        {pollOptions.length > 0 && <PollComponent pollOptions={pollOptions} />}
 
         <section className="mb-5 pb-5">
           {comments.length === 0 ? (

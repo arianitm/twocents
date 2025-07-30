@@ -1,4 +1,4 @@
-import { FaApple, FaAndroid } from "react-icons/fa";
+import { FaApple, FaAndroid, FaChevronRight } from "react-icons/fa";
 import Image from "next/image";
 import FeatureSection from "./FeatureSection";
 
@@ -24,16 +24,17 @@ export default function HeroSection() {
                 </button>
               </div>
             </div>
-
             <div className="mt-6">
-              <div className="flex items-center bg-transparent border border-[#bfa873] rounded-full overflow-hidden w-full max-w-md">
+              <div className="flex items-center border border-[#bfa873] rounded-full overflow-hidden w-full max-w-md">
                 <input
                   type="email"
                   placeholder="Enter your email address"
-                  className="bg-transparent text-[#cfc6b3] placeholder-[#cfc6b3] px-5 py-1 outline-none w-full"
+                  className="bg-transparent text-[#cfc6b3] placeholder-[#cfc6b3] px-6 py-4 outline-none w-full text-base"
                 />
-                <button className="bg-[#bfa873] hover:bg-[#cfb15c] p-3 m-3 rounded-full transition">
-                  <span className="text-black text-xl">{">"}</span>
+                <button className="flex items-center justify-center w-12 h-12 rounded-full bg-[#bfa873] hover:bg-[#cfb15c] cursor-pointer transition-colors duration-200 mr-2">
+                  <span className="text-black text-lg">
+                    <FaChevronRight color="white" />
+                  </span>
                 </button>
               </div>
             </div>
